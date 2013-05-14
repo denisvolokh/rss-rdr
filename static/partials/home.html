@@ -1,0 +1,69 @@
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span3 well">
+			<div ng-repeat="item in datasets">
+				<p>
+					<a href="#/calc/{[{item._id.$oid}]}">
+						<span class="label label-info">
+							{[{item.name}]}
+						</span>
+					</a>
+					<span class="pull-right">
+						<a href="" ng-click="removeFile(item)"><i class="icon-remove"></i></a>
+					</span>
+				</p>
+			</div>
+			<!-- <ul class="well">
+				<li class="nav-header">
+					Original Data
+				</li>
+				<li ng-repeat="item in datasets">
+					<a href="#/calc/{[{item._id.$oid}]}">{[{item.name}]}</a>
+				</li>
+			</ul> -->
+		</div>
+		
+		<div class="span9">
+			<div class="row-fluid">
+				<form class="form-horizontal" 
+				  	ng-submit="submitFile()" 
+				  	enctype="multipart/form-data">
+				    <fieldset>
+				      <div id="legend">
+				        <legend class="">Upload New Data</legend>
+				      </div>
+				 
+				      <!-- Name -->
+				      <div class="control-group">
+				        <label class="control-label"  for="username">Name</label>
+				        <div class="controls">
+				          <input type="text" name="given_name" placeholder="Name your data (optional)" 
+				          	class="input-xlarge"
+				          	ng-model="custom_name">
+				        </div>
+				      </div>
+				 
+				      <!-- Card Number -->
+				      <div class="control-group">
+				        <label class="control-label" for="email">Choose file</label>
+				        <div class="controls">
+				          <input type="file" name="file" class="input-xlarge"
+				          	onchange="angular.element(this).scope().setFile(this)">
+				        </div>
+				      </div>
+				 				 				 
+				      <!-- Submit -->
+				      <div class="control-group">
+				        <div class="controls">
+				          <button class="btn btn-success" ng-show="!uploading">Upload</button>
+				          <button class="btn btn-important" ng-disabled="true" ng-show="uploading">Uploading ...</button>
+				        </div>
+				      </div>
+				 
+				    </fieldset>
+				  </form>
+				</div>	
+				<!-- <span class="alert">File is successfully uploaded.</span> -->
+		</div>
+	</div>
+</div>
