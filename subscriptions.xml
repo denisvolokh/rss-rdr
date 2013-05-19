@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <head>
+        <title>Barmaleikin subscriptions in Google Reader</title>
+    </head>
+    <body>
+        <outline title="Flex" text="Flex">
+            <outline text="1ndivisible" title="1ndivisible" type="rss"
+                xmlUrl="http://www.1ndivisible.com/?feed=rss2" htmlUrl="http://www.1ndivisible.com"/>
+            <outline text="33 коровы" title="33 коровы" type="rss"
+                xmlUrl="http://the33cows.com/feed/" htmlUrl="http://the33cows.com"/>
+            <outline text="44ACTIONS" title="44ACTIONS" type="rss"
+                xmlUrl="http://www.44actions.com/?feed=rss" htmlUrl="http://www.44actions.com"/>
+            <outline text="a_[w] блог" title="a_[w] блог" type="rss"
+                xmlUrl="http://actualwave.com/blog/?feed=rss2" htmlUrl="http://actualwave.com/blog"/>
+            <outline
+                text="AaronHardy.com :: For all your Aaron Hardy needs."
+                title="AaronHardy.com :: For all your Aaron Hardy needs."
+                type="rss" xmlUrl="http://aaronhardy.com/feed/" htmlUrl="http://aaronhardy.com"/>
+            <outline text="ActionScript 3 Design Patterns"
+                title="ActionScript 3 Design Patterns" type="rss"
+                xmlUrl="http://www.as3dp.com/feed/" htmlUrl="http://www.as3dp.com"/>
+        </outline>
+    </body>
+</opml>

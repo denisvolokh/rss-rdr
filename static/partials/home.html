@@ -1,69 +1,75 @@
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span3 well">
-			<div ng-repeat="item in datasets">
-				<p>
-					<a href="#/calc/{[{item._id.$oid}]}">
-						<span class="label label-info">
-							{[{item.name}]}
-						</span>
-					</a>
-					<span class="pull-right">
-						<a href="" ng-click="removeFile(item)"><i class="icon-remove"></i></a>
-					</span>
-				</p>
-			</div>
-			<!-- <ul class="well">
-				<li class="nav-header">
-					Original Data
-				</li>
-				<li ng-repeat="item in datasets">
-					<a href="#/calc/{[{item._id.$oid}]}">{[{item.name}]}</a>
-				</li>
-			</ul> -->
+		<div class="span3 sidebar-nav">
+			<div class="well" ng-repeat="feed in root.feeds" style="padding: 10px;">
+				<ul class="nav nav-list" style="padding-left: 5px; padding-right: 5px;">
+					<li class="nav-header">{[{ feed.group }]}</li>
+					<li ng-repeat="item in feed.items">
+	          			<a href="" ng-click="itemClicked(item)">
+	          				<i class="icon-envelope"></i> {[{item.title}]} 
+	          				<span class="badge badge-info" ng-hide="item.unread_count == 0">{[{ item.unread_count }]}</span>
+	          			</a>
+	          		</li>	
+				</ul>	
+			</div>	
 		</div>
 		
 		<div class="span9">
 			<div class="row-fluid">
-				<form class="form-horizontal" 
-				  	ng-submit="submitFile()" 
-				  	enctype="multipart/form-data">
-				    <fieldset>
-				      <div id="legend">
-				        <legend class="">Upload New Data</legend>
-				      </div>
-				 
-				      <!-- Name -->
-				      <div class="control-group">
-				        <label class="control-label"  for="username">Name</label>
-				        <div class="controls">
-				          <input type="text" name="given_name" placeholder="Name your data (optional)" 
-				          	class="input-xlarge"
-				          	ng-model="custom_name">
-				        </div>
-				      </div>
-				 
-				      <!-- Card Number -->
-				      <div class="control-group">
-				        <label class="control-label" for="email">Choose file</label>
-				        <div class="controls">
-				          <input type="file" name="file" class="input-xlarge"
-				          	onchange="angular.element(this).scope().setFile(this)">
-				        </div>
-				      </div>
-				 				 				 
-				      <!-- Submit -->
-				      <div class="control-group">
-				        <div class="controls">
-				          <button class="btn btn-success" ng-show="!uploading">Upload</button>
-				          <button class="btn btn-important" ng-disabled="true" ng-show="uploading">Uploading ...</button>
-				        </div>
-				      </div>
-				 
-				    </fieldset>
-				  </form>
-				</div>	
-				<!-- <span class="alert">File is successfully uploaded.</span> -->
+				<div ng-switch on="view"> 
+					<div ng-switch-when="read">
+						<div class="row-fluid">
+							<div class="span8">
+								<h3>{[{ selectedFeed.title }]}</h3>
+							</div>
+							<div class="span4">
+								<span class="btn btn-small">Mark All Read</span>
+								<span class="btn btn-small">Unsubscribe</span>
+							</div>
+						</div>	
+						<div ng-repeat="post in posts" class="" ng-click="onPostClick(post)">
+							<div class="row-fluid">
+								<div class="span8">
+									<h4><i class="icon-star"></i> {[{post.title}]}</h4>									
+								</div>
+								<div class="span4">
+									<h6 class="text-right muted">
+										{[{post.published.$date}]} (some time ago)
+									</h6>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span12">
+									<blockquote ng-class="getPostBlockquoteClass(post)">
+										<!-- <p><a href="{[{ post.link }]}" target="_blank"><strong>{[{ post.feed.title }]}</strong></a></p> -->
+										<p ng-bind-html-unsafe="post.description"></p>
+									</blockquote>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span12">
+									<span class="label">test</span>
+								</div>
+							</div>
+							<hr id="hrEndPost">
+						</div>
+					</div>
+					<div ng-switch-default>
+						<p>New in your subscriptions</p>
+						<div ng-repeat="post in root.digest" 
+							style="padding: 10px;" 
+							ng-click="onDigestPostClick(post)">
+							<h3 style="margin-top: 0px;">
+								<a href="{[{ post.link }]}" target="_blank"><strong>{[{ post.feed.title }]}</strong></a>
+								<span style="color: grey;">(1)</span>
+							</h3>
+							<p ng-bind-html-unsafe="post.description"></p>
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
 		</div>
 	</div>
 </div>

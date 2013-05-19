@@ -7,11 +7,11 @@ app.config(function($interpolateProvider) {
 
 app.config(function($routeProvider) {
 	$routeProvider.when("/", {
-		templateUrl: "static/partials/home.html?123123123123123",
+		templateUrl: "static/partials/home.html",
 		controller: "HomeController"
-	}).when("/calc/:id", {
-		templateUrl: "static/partials/calc.html?123123123123123123",
-		controller: "CalcController" 
+	}).when("/import", {
+		templateUrl: "static/partials/import.html",
+		controller: "ImportController" 
 	}).otherwise({
 		redirectTo: "/"
 	});
@@ -21,12 +21,19 @@ app.run(function($rootScope, $location, $http, $log) {
 	$log.info("[+] App is running!")
 	
 	$rootScope.root = {
-		showCalcPanel: false,
-		loading: false,
-		selectedFile: "",
-		position: 1000000,
-		strategy: 1,
-		onaction: 2,
-		adventry: false
+		
 	}
+
+	$http.get("/api/feeds")
+		.success(function(result) {			
+			if (result.data && result.data.length > 0) {
+				$rootScope.root.feeds = result.data;
+				$location.path("/")	
+			} else {
+				$location.path("/import");		
+			}
+		})
+		.error(function(error) {
+			alert("Arghhh!!!")
+		})
 });

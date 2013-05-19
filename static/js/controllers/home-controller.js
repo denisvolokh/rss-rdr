@@ -1,53 +1,53 @@
 function HomeController($http, $scope, $log, $rootScope) {
-	$rootScope.root.showCalcPanel = false;
-
-	$scope.uploading = false;
-
-	$http.get("/listfiles")
-		.success(function(data) {
-			$scope.datasets = data.reverse();
+	
+	$http.get("/api/digest")
+		.success(function(result) {			
+			if (result.data && result.data.length > 0) {
+				$rootScope.root.digest = result.data;
+				
+			} else {
+				
+			}
+		})
+		.error(function(error) {
+			alert("Arghhh!!!")
 		})
 
-	$scope.readyToUpload = true;
-	var uploadFile;
+	$scope.onPostClick = function(post) {		
+		$http.get("/api/posts/make_read/" + post._id.$oid)
+			.success(function(result) {
+        		post.read = true;
+        		// window.scrollTo(0, 200)		
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})
+	}
 
-	$scope.setFile = function(element) {
-		uploadFile = element.files[0];
-		if (uploadFile) {
-			$scope.readyToUpload = true;
-		}
-	};	
-			
-	$scope.submitFile = function() {
-		$scope.uploading = true;
+	$scope.onDigestPostClick = function(post) {
+		$scope.selectedPost = post;
+		$http.get("/api/posts?feed_id=" + post.feed_id.$oid)
+			.success(function(result) {
+        		$scope.posts = result.data;
+        		$scope.selectedFeed = result.feed;
+        		$scope.view = "read";
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})
+	}
 
-		var formData = new FormData();
-		if (angular.isDefined($scope.custom_name))
-			formData.append("name", $scope.custom_name);
-		if (angular.isDefined(uploadFile))
-			formData.append("file", uploadFile);
+	$scope.itemClicked = function(post) {
+		$http.get("/api/posts?feed_id=" + post.id.$oid)
+			.success(function(result) {
+        		$scope.posts = result.data;
+        		$scope.selectedFeed = result.feed;
+        		$scope.view = "read";
+        		window.scrollTo(0, 0)
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})
+	}
 
-		var xhr = new XMLHttpRequest;
-		xhr.addEventListener("load", function(e) {
-			$http.get("/listfiles")
-				.success(function(data) {
-					$scope.datasets = data.reverse();
-			})	
-
-			$scope.custom_name = "";
-			$scope.uploading = false;	
-		})
-
-		xhr.open('POST', '/upload', true);	
-	    xhr.send(formData);
-	}	
-
-	$scope.removeFile = function(file) {
-		$log.info(file);
-
-		$http.get("/api/removefile?file_id="+file._id.$oid)
-			.success(function(data) {
-				$scope.datasets = data.reverse();
-		})
+	$scope.getPostBlockquoteClass = function(post) {
+		return (post.read == true) ? '' : 'unread'
 	}
 }

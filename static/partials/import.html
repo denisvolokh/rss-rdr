@@ -1,0 +1,29 @@
+<div class="container-fluid">
+		<form class="form-horizontal" 
+		  	ng-submit="submitFile()" 
+		  	enctype="multipart/form-data">
+		    <fieldset>
+		      <div id="legend">
+		        <legend class="">Upload RSS subscriptions</legend>
+		      </div>
+		 		 
+		      <!-- Card Number -->
+		      <div class="control-group">
+		        <label class="control-label" for="email">Choose file</label>
+		        <div class="controls">
+		          <input type="file" name="file" class="input-xlarge"
+		          	onchange="angular.element(this).scope().setFile(this)">
+		        </div>
+		      </div>
+		 				 				 
+		      <!-- Submit -->
+		      <div class="control-group">
+		        <div class="controls">
+		          <button class="btn btn-success" ng-show="!uploading">Upload</button>
+		          <button class="btn btn-important" ng-disabled="true" ng-show="uploading">Uploading ...</button>
+		        </div>
+		      </div>
+		 
+		    </fieldset>
+		 </form>
+</div>		
