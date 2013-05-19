@@ -3,7 +3,7 @@
 		<div class="span3 sidebar-nav">
 			<div class="well" ng-repeat="feed in root.feeds" style="padding: 10px;">
 				<ul class="nav nav-list" style="padding-left: 5px; padding-right: 5px;">
-					<li class="nav-header">{[{ feed.group }]}</li>
+					<li class="nav-header">{[{ feed.group }]} <span class="badge badge-info" ng-hide="true">13</span></li>
 					<li ng-repeat="item in feed.items">
 	          			<a href="" ng-click="itemClicked(item)">
 	          				<i class="icon-envelope"></i> {[{item.title}]} 

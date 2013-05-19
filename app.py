@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 import pymongo
+from urlparse import urlparse
 
 #----------------------------------------
 # initialization
