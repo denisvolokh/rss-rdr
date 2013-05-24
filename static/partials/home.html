@@ -1,36 +1,60 @@
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span3 sidebar-nav">
-			<div class="well" ng-repeat="feed in root.feeds" style="padding: 10px;">
-				<ul class="nav nav-list" style="padding-left: 5px; padding-right: 5px;">
-					<li class="nav-header">{[{ feed.group }]} <span class="badge badge-info" ng-hide="true">13</span></li>
-					<li ng-repeat="item in feed.items">
-	          			<a href="" ng-click="itemClicked(item)">
-	          				<i class="icon-envelope"></i> {[{item.title}]} 
-	          				<span class="badge badge-info" ng-hide="item.unread_count == 0">{[{ item.unread_count }]}</span>
-	          			</a>
-	          		</li>	
-				</ul>	
-			</div>	
+		<div class="fullheight span3" style="overflow: auto; padding-right: 5px;">
+			<div class="row-fluid">
+				<ul class="nav nav-pills nav-stacked">
+		  			<li ng-class="getNavigationMenuState(root.navigation, 'digest')">
+		  				<a href="" ng-click="onDigestClick()"><i class="icon-th-large"></i>  Digest</a>
+		  			</li>
+		  			<li ng-class="getNavigationMenuState(root.navigation, 'starred')">
+		  				<a href=""><i class="icon-star"></i>  Starred</a>
+		  			</li>
+		  			<li ng-class="getNavigationMenuState(root.navigation, 'tags')">
+		  				<a href=""> <i class="icon-tags"></i>  Tags</a>
+		  			</li>
+				</ul>
+			</div>
+			<div class="row-fluid">
+				<div class="span12 sidebar-nav">
+					<div class="well" ng-repeat="feed in root.feeds" style="padding: 10px;">
+						<ul class="nav nav-list" style="padding-left: 5px; padding-right: 5px;">
+							<li class="nav-header"><a href="" ng-click="onGroupHeaderClick(feed)">{[{ feed.group }]} 
+								<span class="label" ng-hide="feed.unread_count==0">{[{ feed.unread_count }]}</span></a>
+							</li>
+							<li ng-class="getNavigationMenuState(root.navigation, item.id.$oid)" 
+								ng-repeat="item in feed.items" ng-show="item.isGroupOpen">
+			          			<a href="" ng-click="onFeedItemClicked(item)">
+			          				<i class="icon-envelope"></i> {[{item.title | isLong}]} 
+			          				<!-- <img src="{[{item.htmlUrl + 'favicon.ico'}]}"> {[{item.title | isLong}]}  -->
+			          				<span class="label label-info pull-right" ng-hide="item.unread_count == 0">{[{ item.unread_count }]}</span>
+			          			</a>
+			          		</li>	
+						</ul>	
+					</div>	
+				</div>
+			</div>
 		</div>
 		
 		<div class="span9">
-			<div class="row-fluid">
-				<div ng-switch on="view"> 
+			<div class="fullheight2 row-fluid" style="overflow: auto; margin-right: 10px;">
+				<div ng-switch on="view" style="margin-right: 10px;"> 
 					<div ng-switch-when="read">
 						<div class="row-fluid">
-							<div class="span8">
+							<div class="span12">
 								<h3>{[{ selectedFeed.title }]}</h3>
 							</div>
-							<div class="span4">
-								<span class="btn btn-small">Mark All Read</span>
-								<span class="btn btn-small">Unsubscribe</span>
-							</div>
 						</div>	
-						<div ng-repeat="post in posts" class="" ng-click="onPostClick(post)">
+						<div ng-repeat="post in posts" class="">
 							<div class="row-fluid">
 								<div class="span8">
-									<h4><i class="icon-star"></i> {[{post.title}]}</h4>									
+									<h4>
+										<!-- <a href=""><i class="icon-star-empty" style="margin-top: 5px;"></i></a> -->
+										<a href="" ng-click="onStarClick(post)">
+											<img ng-show="post.starred" src="static/img/star.png">
+											<img ng-show="!post.starred" src="static/img/star-empty.png">
+										</a>
+										<a href="{[{post.link}]}" target="_blank">{[{post.title}]}</a>
+									</h4>
 								</div>
 								<div class="span4">
 									<h6 class="text-right muted">
@@ -42,28 +66,34 @@
 								<div class="span12">
 									<blockquote ng-class="getPostBlockquoteClass(post)">
 										<!-- <p><a href="{[{ post.link }]}" target="_blank"><strong>{[{ post.feed.title }]}</strong></a></p> -->
-										<p ng-bind-html-unsafe="post.description"></p>
+										<p ng-bind-html-unsafe="post.content"></p>
 									</blockquote>
 								</div>
 							</div>
 							<div class="row-fluid">
 								<div class="span12">
-									<span class="label">test</span>
+									<span class="label label-warning">warning <a href=""><i class="icon-remove"></i></a></span>
+									<span class="label label-success">success <i class="icon-remove"></i></span>
+									<span class="label label-info">info <i class="icon-remove"></i></span>
+									<span class="label">test <i class="icon-remove"></i></span>
+									<span class="btn btn-mini">Add Tag</span>
 								</div>
 							</div>
 							<hr id="hrEndPost">
 						</div>
 					</div>
 					<div ng-switch-default>
-						<p>New in your subscriptions</p>
+						<h3>Reader's Digest</h3>
 						<div ng-repeat="post in root.digest" 
 							style="padding: 10px;" 
 							ng-click="onDigestPostClick(post)">
-							<h3 style="margin-top: 0px;">
-								<a href="{[{ post.link }]}" target="_blank"><strong>{[{ post.feed.title }]}</strong></a>
-								<span style="color: grey;">(1)</span>
-							</h3>
-							<p ng-bind-html-unsafe="post.description"></p>
+							<span style="margin-top: 0px;">								
+								<a href="{[{ post.link }]}" target="_blank" style="font-size: 20px;">
+									<strong>{[{ post.feed.title }]}</strong>
+								</a>
+								<span style="color: grey; font-size: 18px;">(1)</span>
+							</span>
+							<p ng-bind-html-unsafe="post.content"></p>
 						</div>
 					</div>
 					

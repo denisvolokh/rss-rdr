@@ -861,7 +861,7 @@
                 title="Блог про Google Apps" type="rss"
                 xmlUrl="http://www.googleapps.ru/feeds/posts/default" htmlUrl="http://www.googleapps.ru/"/>
             <outline text="Журнал Esquire" title="Журнал Esquire"
-                type="rss" xmlUrl="http://www.esquire.ru/rss/index.xml" htmlUrl="http://esquire.ru/"/>
+                type="rss" xmlUrl="http://feeds.feedburner.com/esquire-ru" htmlUrl="http://esquire.ru/"/>
             <outline text="Интернетные штучки"
                 title="Интернетные штучки" type="rss"
                 xmlUrl="http://feeds.feedburner.com/internetno" htmlUrl="http://internetno.net"/>
