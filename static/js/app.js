@@ -1,4 +1,4 @@
-var app = angular.module("app", ['ngResource', "$strap.directives"]);
+var app = angular.module("app", ['ngResource', "$strap.directives", "ngCookies"]);
 
 app.config(function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{[{');
@@ -17,21 +17,24 @@ app.config(function($routeProvider) {
 	});
 });
 
-app.run(function($rootScope, $location, $http, $log) {
+app.run(function($rootScope, $location, $http, $log, $cookieStore) {
 	$log.info("[+] App is running!")
 	
 	$rootScope.root = {
 		navigation: "digest"
 	}
 
+	var closedGroups = $cookieStore.get("closed-groups") || [];
+
 	$http.get("/api/feeds")
 		.success(function(result) {			
 			if (result.data && result.data.length > 0) {
 				$rootScope.root.feeds = result.data;
 				angular.forEach($rootScope.root.feeds, function(feed) {
-					feed["isGroupOpen"] = true;
+					var isClosed = (closedGroups.indexOf(feed["group"]) != -1);
+					feed["isGroupOpen"] = !isClosed;
 					angular.forEach(feed.items, function(item) {
-						item["isGroupOpen"] = true;
+						item["isGroupOpen"] = !isClosed;
 					})
 				})
 				$location.path("/")	

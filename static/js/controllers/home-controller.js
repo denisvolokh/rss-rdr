@@ -1,4 +1,4 @@
-function HomeController($http, $scope, $log, $rootScope) {
+function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	
 	$(document).ready(function(){
 	    $(".fullheight").height($(document).height() - 65);
@@ -21,6 +21,20 @@ function HomeController($http, $scope, $log, $rootScope) {
 			})
 	}
 
+	var fetchStarred = function() {
+		$scope.selectedFeed = {title : "Starred Items"}
+		$http.get("/api/posts/starred")
+			.success(function(result) {
+				$scope.view = "read";			
+				if (result.data && result.data.length > 0) {
+					$scope.posts = result.data;
+				} 
+			})
+			.error(function(error) {
+				alert("Arghhh!!!")
+			})	
+	}
+
 	fetchDigest();
 
 	$scope.onStarClick = function(post) {
@@ -28,7 +42,8 @@ function HomeController($http, $scope, $log, $rootScope) {
 			url: "/api/posts/update_star/" + post._id.$oid,
 			method: "UPDATE"
 		}).success(function(result) {
-    		post.starred = !post.starred;		
+    		post.starred = !post.starred;
+    		post.read = true;
 		}).error(function(error) {
 			alert("Arghhhh!")
 		})
@@ -59,6 +74,12 @@ function HomeController($http, $scope, $log, $rootScope) {
 		fetchDigest();
 	}
 
+	$scope.onStarredClick = function() {
+		$rootScope.root.navigation = "starred";
+
+		fetchStarred();
+	}
+
 	$scope.onDigestPostClick = function(post) {
 		$scope.selectedPost = post;
 		$http.get("/api/posts?feed_id=" + post.feed_id.$oid)
@@ -73,10 +94,22 @@ function HomeController($http, $scope, $log, $rootScope) {
 	}
 
 	$scope.onGroupHeaderClick = function(feed) {
-		feed["isGroupOpen"] = !feed["isGroupOpen"]
+		var closedGroups = $cookieStore.get("closed-groups") || [];
+		var index = closedGroups.indexOf(feed["group"]);
+		feed["isGroupOpen"] = !feed["isGroupOpen"];
+
+		if (index != -1) {
+			closedGroups.splice(index, 1);
+		}
+		if (feed["isGroupOpen"] == false) {
+			closedGroups.push(feed["group"])	
+		} 
+
 		angular.forEach(feed.items, function(item) {
 			item["isGroupOpen"] = feed["isGroupOpen"];
-		})
+		});
+
+		$cookieStore.put("closed-groups", closedGroups);
 	}
 
 	$scope.onFeedItemClicked = function(feed) {

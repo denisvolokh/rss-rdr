@@ -842,7 +842,7 @@
             <outline text="Gmail Blog" title="Gmail Blog" type="rss"
                 xmlUrl="http://feedproxy.google.com/OfficialGmailBlog" htmlUrl="http://gmailblog.blogspot.com/"/>
             <outline text="Lifehacker" title="Lifehacker" type="rss"
-                xmlUrl="http://feeds.feedburner.com/lifehacker-ru" htmlUrl="http://lifehacker.ru"/>
+                xmlUrl="lifehacker.ru/feed/" htmlUrl="http://lifehacker.ru"/>
             <outline text="MOBBIT: Мобильные страсти"
                 title="MOBBIT: Мобильные страсти" type="rss"
                 xmlUrl="http://mobbit.info/rss.php" htmlUrl="http://mobbit.info/"/>

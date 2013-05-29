@@ -37,7 +37,7 @@
 <div class="navbar">
   <div class="navbar-inner">
     <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.001</sub></a>
-    <form class="navbar-form pull-right form-inline" ng-hide="root.navigation == 'digest'">
+    <form class="navbar-form pull-right form-inline" ng-hide="root.navigation == 'digest' || root.navigation == 'starred'">
         <span class="btn btn-small">Show Unread Only</span>
         <span class="btn btn-small" ng-click="root.makeFeedAllRead(root.navigation)">Mark All As Read</span>
         <span class="btn btn-small">Refresh</span>
@@ -53,7 +53,8 @@
 <div ng-view></div>
 
 <script type="text/javascript" src="static/js/angular/angular.js"></script>  
-<script type="text/javascript" src="static/js/angular/angular-resource.js"></script>  
+<script type="text/javascript" src="static/js/angular/angular-cookies.min.js"></script>  
+<script type="text/javascript" src="static/js/angular/angular-resource.min.js"></script>  
 <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="static/js/app.js"></script>
 <script type="text/javascript" src="static/js/controllers/home-controller.js"></script>

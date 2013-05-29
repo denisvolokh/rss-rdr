@@ -2,63 +2,102 @@ import pymongo
 import feedparser
 import arrow
 import datetime
+from dateutil.parser import parse
 from bson.objectid import ObjectId
+import Queue
+import threading
 
 conn = pymongo.Connection('localhost')
 db = conn['rss-rdr']	
+queue = Queue.Queue()
 
+class ThreadFetchPosts(threading.Thread):
+	def __init__(self, queue):
+		threading.Thread.__init__(self)
+		self.queue = queue;
 
-db["posts"].remove()
-db["tags"].remove()
-flex_feeds = db["feeds"].find({"group": "Others"})
+	def run(self):
+		while True:
+			#grab feed from the queue
+			feed = self.queue.get()
 
-for feed in flex_feeds:
-	print "[+] FEED ID: ", feed.get("_id")
-	print "[+] FEED: ", feed.get("title")
-	data = feedparser.parse(feed.get("xmlUrl"))
-	# data = feedparser.parse("http://feeds.feedburner.com/mobbit/TnEX")
-	print "[+] Entries ", len(data.entries)
-	posts = []
-	for item in data.entries:
-		post = {
-			"group": feed.get("group"),
-			"feed_id": ObjectId(feed.get("_id")),
-			"title" : item.get("title"),
-			# "description": item.description,
-			"link": item.get("link"),
-			"read" : False,
-			"created": datetime.datetime.utcnow(),
-			"tags": []
-		}
+			print "[+] ----> start"
+			self.fetch_and_save_posts(feed)
 
-		if item.has_key("description"):
-			post["content"] = item["description"]
-		elif item.has_key("content"):
-			post["content"] = item["content"]	
+			self.queue.task_done()
+			print "[+] ----> DONE"	
 
-		if item.has_key("updated_parsed"):
-			post["published"] = datetime.datetime(item.updated_parsed[0], 
-				item.updated_parsed[1], 
-				item.updated_parsed[2],
-				item.updated_parsed[3], 
-				item.updated_parsed[4]) 
-		elif item.has_key("published_parsed"):	
-			if item.published_parsed:
+	def fetch_and_save_posts(self, feed):
+		print "[+] FEED ID: ", feed.get("_id")
+		print "[+] FEED: ", feed.get("title")
+		data = feedparser.parse(feed.get("xmlUrl"))
+		# data = feedparser.parse("http://feeds.feedburner.com/mobbit/TnEX")
+		print "[+] Entries ", len(data.entries)
+		posts = []
+		feed_ranks = []
+		for item in data.entries:
+			post = {
+				"group": feed.get("group"),
+				"feed_id": ObjectId(feed.get("_id")),
+				"title" : item.get("title"),
+				# "description": item.description,
+				"link": item.get("link"),
+				"read" : False,
+				"created": datetime.datetime.utcnow(),
+				"tags": [],
+				"starred" : False
+			}
+
+			if item.has_key("description"):
+				post["content"] = item["description"]
+			elif item.has_key("content"):
+				post["content"] = item["content"]	
+
+			if item.has_key("updated_parsed"):
+				post["published"] = datetime.datetime(item.updated_parsed[0], 
+					item.updated_parsed[1], 
+					item.updated_parsed[2],
+					item.updated_parsed[3], 
+					item.updated_parsed[4]) 
+			elif item.has_key("published_parsed") and item.published_parsed:
 				post["published"] = datetime.datetime(item.published_parsed[0], 
-					item.published_parsed[1], 
-					item.published_parsed[2],
-					item.published_parsed[3], 
-					item.published_parsed[4]) 
-			elif "published" in item:
-				post["published"] = item["published"]
+						item.published_parsed[1], 
+						item.published_parsed[2],
+						item.published_parsed[3], 
+						item.published_parsed[4]) 
 			else:
-				post["published"] = datetime.utcnow()
-						
-		posts.append(post)	
+				print "[+] KEYS: ", item.keys()
+				if "published" not in item:
+					post["published"] = None
+				else:		
+					print parse(item["published"])
+					post["published"] = parse(item["published"])
+							
+			posts.append(post)	
 
-	if len(posts) > 0:	
-		db["posts"].insert(posts)	
+		if len(posts) > 0:	
+			db["posts"].insert(posts)
 
-	db["tags"].insert([
-		{"name" : "job"},{"name" : "kids"},{"name" : "hobby"},{"name" : "family"}
-	])	
+def main():
+	db["posts"].remove()
+	db["tags"].remove()
+	db["ranks"].remove()
+
+	# feeds = db["feeds"].find({"group": "Others"})
+	# feeds = db["feeds"].find({"group": "Live Journal"})
+	feeds = db["feeds"].find()
+
+	for i in range(50):
+		t = ThreadFetchPosts(queue)
+		t.setDaemon(True)
+		t.start()
+
+	for feed in feeds:
+		queue.put(feed)
+
+	queue.join()
+	print "[+] STOPPED!"		
+
+
+if __name__ == "__main__":
+	main()
