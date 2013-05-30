@@ -58,6 +58,36 @@ def list_digest():
 
 	return dumps(dict(result=True, data=_records))
 
+@app.route("/api/tags", methods=["POST", "GET"])
+def list_tags():
+	db["tags"].remove()
+	db["tags"].insert([
+		{
+			"name" : "jobs"
+		},
+		{
+			"name" : "family"
+		},
+		{
+			"name" : "friends"
+		},
+		{
+			"name" : "hobby"
+		},
+		{
+			"name" : "kids"
+		},
+		{
+			"name" : "tickets"
+		},
+		{
+			"name" : "money"
+		}
+		])
+
+	tags = db["tags"].find()
+	return dumps(dict(result=True, data=tags))	
+
 
 @app.route("/api/posts", methods=["POST", "GET"])
 def list_posts():

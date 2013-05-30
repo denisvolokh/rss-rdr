@@ -10,7 +10,7 @@
 		  				<a href="" ng-click="onStarredClick()"><i class="icon-star"></i>  Starred</a>
 		  			</li>
 		  			<li ng-class="getNavigationMenuState(root.navigation, 'tags')">
-		  				<a href=""> <i class="icon-tags"></i>  Tags</a>
+		  				<a href="" ng-click="onTagsClick()"> <i class="icon-tags"></i>  Tags</a>
 		  			</li>
 				</ul>
 			</div>
@@ -42,6 +42,22 @@
 		<div class="span9">
 			<div class="fullheight2 row-fluid" style="overflow: auto; margin-right: 10px;">
 				<div ng-switch on="view" style="margin-right: 10px;"> 
+					<div ng-switch-when="tags">
+						<div class="row-fluid">
+							<div class="span12 well">
+								<span style="display: block;">
+									<a class="label" 
+										href=""
+										ng-click="onTagClick(tag)" 
+										ng-repeat="tag in tags" 
+										style="margin-right: 7px; margin-bottom: 3px;">
+										<i class="icon-ok" ng-show="tag.selected"></i> {[{tag.name}]}
+									</a>
+								</span>
+							</div>
+							<span class="btn pull-right">Apply Filter</span>
+						</div>	
+					</div>	
 					<div ng-switch-when="read">
 						<div class="row-fluid">
 							<div class="span12">

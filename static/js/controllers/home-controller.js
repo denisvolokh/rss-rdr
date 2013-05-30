@@ -80,6 +80,22 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 		fetchStarred();
 	}
 
+	$scope.onTagsClick = function() {
+		$rootScope.root.navigation = "tags";
+		$scope.view = "tags";
+
+		$http.get("/api/tags")
+			.success(function(result) {
+        		$scope.tags = result.data;
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})		
+	}
+
+	$scope.onTagClick = function(tag) {
+		tag["selected"] = true;
+	}
+
 	$scope.onDigestPostClick = function(post) {
 		$scope.selectedPost = post;
 		$http.get("/api/posts?feed_id=" + post.feed_id.$oid)

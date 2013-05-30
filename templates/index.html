@@ -37,7 +37,8 @@
 <div class="navbar">
   <div class="navbar-inner">
     <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.001</sub></a>
-    <form class="navbar-form pull-right form-inline" ng-hide="root.navigation == 'digest' || root.navigation == 'starred'">
+    <form class="navbar-form pull-right form-inline" 
+      ng-hide="root.navigation == 'digest' || root.navigation == 'starred' || root.navigation == 'tags'">
         <span class="btn btn-small">Show Unread Only</span>
         <span class="btn btn-small" ng-click="root.makeFeedAllRead(root.navigation)">Mark All As Read</span>
         <span class="btn btn-small">Refresh</span>
