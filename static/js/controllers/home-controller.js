@@ -5,6 +5,11 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	    $(".fullheight2").height($(document).height() - 75);
 	});
 
+	$scope.tagPopoverData = {
+		tagname: "",
+		post_id: ""
+	};
+
 	var fetchDigest = function() {
 		$http.get("/api/digest")
 			.success(function(result) {
@@ -49,6 +54,56 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 		})
 	}
 
+	$scope.onAddTagsClick = function(post) {
+		$scope.tagPopoverData = {
+			tagname: "",
+			post: post
+		}
+	}	
+
+	$scope.onCreateTagClick = function(data) {
+		// alert(data.tagname + data.post_id);
+
+		if (data.tagname != "") {
+			tags = data.post.tags || [];
+			tags.push(data.tagname);	
+			
+			$http({
+				url: "/api/posts/" + data.post._id.$oid + "/add_tags",
+				data: {
+					tags : tags.join(",")
+				},
+				method: "POST"
+			}).success(function(result) {
+	    		
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})	
+		}
+
+		$scope.tagPopoverData = {
+			tagname: "",
+			post: null
+		}
+	}
+
+	$scope.onRemoveTagClick = function(post, tag) {
+		tags = post.tags;
+		tags.splice(tags.indexOf(tag), 1);
+		
+		$http({
+			url: "/api/posts/" + post._id.$oid + "/add_tags",
+			data: {
+				tags : tags.join(",")
+			},
+			method: "POST"
+		}).success(function(result) {
+    		
+		}).error(function(error) {
+			alert("Arghhhh!")
+		})		
+	}
+
 	$scope.onPostClick = function(post) {		
 		$http.get("/api/posts/make_read/" + post._id.$oid)
 			.success(function(result) {
@@ -83,17 +138,6 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	$scope.onTagsClick = function() {
 		$rootScope.root.navigation = "tags";
 		$scope.view = "tags";
-
-		$http.get("/api/tags")
-			.success(function(result) {
-        		$scope.tags = result.data;
-			}).error(function(error) {
-				alert("Arghhhh!")
-			})		
-	}
-
-	$scope.onTagClick = function(tag) {
-		tag["selected"] = true;
 	}
 
 	$scope.onDigestPostClick = function(post) {
@@ -130,7 +174,13 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 
 	$scope.onFeedItemClicked = function(feed) {
 		$rootScope.root.navigation = feed.id.$oid;
-		$http.get("/api/posts?feed_id=" + feed.id.$oid)
+		$http({
+				url: "/api/posts",
+				data: {
+					feed_id: feed.id.$oid
+				},
+				method: "POST"
+			})
 			.success(function(result) {
         		$scope.posts = result.data;
         		$scope.selectedFeed = result.feed;

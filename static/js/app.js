@@ -17,9 +17,13 @@ app.config(function($routeProvider) {
 	});
 });
 
-app.run(function($rootScope, $location, $http, $log, $cookieStore) {
+app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCache) {
 	$log.info("[+] App is running!")
 	
+	$rootScope.$on("$viewContentLoaded", function() {
+		$templateCache.removeAll();
+	})
+
 	$rootScope.root = {
 		navigation: "digest"
 	}

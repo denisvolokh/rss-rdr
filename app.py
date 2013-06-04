@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, Response, request, redirect, render_template, send_from_directory, send_file
 from bs4 import BeautifulSoup
 from bson.json_util import dumps
@@ -58,53 +59,64 @@ def list_digest():
 
 	return dumps(dict(result=True, data=_records))
 
+
 @app.route("/api/tags", methods=["POST", "GET"])
 def list_tags():
-	db["tags"].remove()
-	db["tags"].insert([
-		{
-			"name" : "jobs"
-		},
-		{
-			"name" : "family"
-		},
-		{
-			"name" : "friends"
-		},
-		{
-			"name" : "hobby"
-		},
-		{
-			"name" : "kids"
-		},
-		{
-			"name" : "tickets"
-		},
-		{
-			"name" : "money"
-		}
-		])
-
 	tags = db["tags"].find()
 	return dumps(dict(result=True, data=tags))	
 
 
-@app.route("/api/posts", methods=["POST", "GET"])
+@app.route("/api/posts", methods=["POST"])
 def list_posts():
-	feed_id = request.args["feed_id"]
-	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
-	# unread_posts = db["posts"].find({"read": False, "feed_id" : ObjectId(feed_id)})
-	posts = db["posts"].find({"feed_id" : ObjectId(feed_id)})
+	tags = None
+	feed_id = None
+	result = None
 
-	return dumps(dict(result=True, data=posts, feed=feed))	
+	if request.data is not None:
+		obj = json.loads(request.data)
 
-@app.route("/api/feeds/unread/count/<feed_id>", methods=["POST", "GET"])
-def feeds_unread_count(feed_id):
-	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
-	count = db["posts"].find({"feed_id" : ObjectId(feed_id), "read" : False}).count()
-	group_count = db["posts"].find({"group" : feed["group"], "read" : False}).count()
+		if "feed_id" in obj:
+			feed_id = obj["feed_id"]
+			feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
+			posts = db["posts"].find({"feed_id" : ObjectId(feed_id)}).sort("published", direction=-1)
+			result = dict(result=True, data=posts, feed=feed)
+		else:
+			if "tags" in obj:
+				tags = str(obj["tags"]).split(",")
+				print "[+] TAGS: ", tags
+				if len(tags) > 0:
+					posts = db["posts"].find({"tags" : {"$in" : tags}})	
+					result = dict(result=True, data=posts, tags=tags)		
+	else:
+		return dumps(dict(result=False))							
 
-	return dumps(dict(result=True, unread_count=count, feed=feed_id, group_unread_count=group_count))		
+	return dumps(result)	
+
+
+@app.route("/api/posts/<post_id>/add_tags", methods=["POST"])
+def post_update_tags(post_id):
+	tags = None
+
+	if request.data is not None:
+		obj = json.loads(request.data)
+		if "tags" in obj:
+			tags = obj["tags"].split(",")
+	
+	if tags is not None:
+		for tag in tags:
+			tag_in_db = db["tags"].find_one({"name" : tag})
+			if tag_in_db is None:
+				db["tags"].insert({"name" : tag})
+
+		post = db["posts"].update(
+			{"_id" : ObjectId(post_id)}, 
+			{"$set" : {
+					"tags" : tags
+				}
+			})
+
+	return dumps(dict(result=True))		
+
 
 @app.route("/api/posts/make_read/<post_id>", methods=["POST", "GET"])
 def post_make_read(post_id):
@@ -139,6 +151,15 @@ def post_update_star(post_id):
 	)
 
 	return dumps(dict(result=True))		
+
+
+@app.route("/api/feeds/unread/count/<feed_id>", methods=["POST", "GET"])
+def feeds_unread_count(feed_id):
+	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
+	count = db["posts"].find({"feed_id" : ObjectId(feed_id), "read" : False}).count()
+	group_count = db["posts"].find({"group" : feed["group"], "read" : False}).count()
+
+	return dumps(dict(result=True, unread_count=count, feed=feed_id, group_unread_count=group_count))		
 
 
 @app.route("/api/feed/make_read/<feed_id>", methods=["UPDATE"])

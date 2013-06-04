@@ -1,0 +1,10 @@
+<form>
+	<input type="text" class="span12" 
+		placeholder="Name your tag"
+		ng-model="tagPopoverData.tagname">
+	<div style="margin: 0px 0px -20px -10px; padding: 9px 10px 0px; border-radius: 0px 0px 5px 5px;">
+		<button class="btn btn-small" ng-click="dismiss()">Close</button>
+		<button class="btn btn-small btn-primary" 
+			ng-click="onCreateTagClick(tagPopoverData); dismiss()">Create Tag</button>
+	</div>
+</form>

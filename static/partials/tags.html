@@ -1,0 +1,40 @@
+<div class="container-fluid">
+	<div class="span12 well row-fluid">
+		<span style="display: block;">
+			<a class="label" 
+				href=""
+				ng-click="onTagClick(tag)" 
+				ng-repeat="tag in tags" 
+				style="margin-right: 7px; margin-bottom: 3px;">
+				<i class="icon-ok" ng-show="tag.selected"></i> {[{tag.name}]}
+			</a>
+		</span>
+	</div>
+	
+	<span class="btn pull-right" 
+		ng-click="applyFilter()">Yarrrr!!!</span>
+
+	<div ng-repeat="post in posts_by_tags" class="span12" style="margin-left: 0px;">
+		<div class="row-fluid">
+			<div class="span8">
+				<h4>
+					<!-- <a href=""><i class="icon-star-empty" style="margin-top: 5px;"></i></a> -->
+					<a href="" ng-click="onStarClick(post)">
+						<img ng-show="post.starred" src="static/img/star.png">
+						<img ng-show="!post.starred" src="static/img/star-empty.png">
+					</a>
+					<a href="{[{post.link}]}" target="_blank">{[{post.title}]}</a>
+				</h4>
+			</div>
+			<div class="span4">
+				<h6 class="text-right muted">
+					{[{post.published.$date}]} (some time ago)
+				</h6>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<span class="label" style="margin-right: 5px; margin-bottom: 3px;"
+				ng-repeat="tag in post.tags">{[{ tag }]}</span>
+		</div>
+	</div>	
+</div>	
