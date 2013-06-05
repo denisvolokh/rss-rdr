@@ -3,6 +3,17 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	$(document).ready(function(){
 	    $(".fullheight").height($(document).height() - 65);
 	    $(".fullheight2").height($(document).height() - 75);
+
+	    $(".fullheight2").scrollspy({target: "#read-posts"});
+	    $('[data-spy="scroll"]').each(function()
+		{
+    		$(this).scrollspy('refresh');
+		});
+
+		$("#read-posts").on("activate", function()
+		{
+    		console.log("ACTIVATED");
+		});
 	});
 
 	$scope.tagPopoverData = {

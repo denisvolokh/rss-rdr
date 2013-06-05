@@ -40,18 +40,22 @@
 		</div>
 		
 		<div class="span9">
-			<div class="fullheight2 row-fluid" style="overflow: auto; margin-right: 10px;">
+			<div class="fullheight2 row-fluid" 
+				style="overflow: auto; margin-right: 10px;"
+				data-spy="scroll">
+				
 				<div ng-switch on="view" style="margin-right: 10px;"> 
 					<div ng-switch-when="tags" 
 						ng-include="'static/partials/tags.html?1111ssss232323'"
 						ng-controller="TagsController"/>
+
 					<div ng-switch-when="read">
 						<div class="row-fluid">
 							<div class="span12">
 								<h3>{[{ selectedFeed.title }]}</h3>
 							</div>
 						</div>	
-						<div ng-repeat="post in posts" class="">
+						<div ng-repeat="post in posts">
 							<div class="row-fluid">
 								<div class="span8">
 									<h4>
@@ -95,7 +99,8 @@
 					<div ng-switch-default>
 						<h3>Reader's Digest</h3>
 						<div ng-repeat="post in root.digest" 
-							style="padding: 10px;" 
+							style="padding: 10px;"
+							id="read-posts" 
 							ng-click="onDigestPostClick(post)">
 							<span style="margin-top: 0px;">								
 								<a href="{[{ post.link }]}" target="_blank" style="font-size: 20px;">
