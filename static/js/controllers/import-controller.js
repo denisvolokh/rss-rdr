@@ -16,11 +16,7 @@ function ImportController($log, $scope, $rootScope, $routeParams, $http) {
 
 		var xhr = new XMLHttpRequest;
 		xhr.addEventListener("load", function(e) {
-
-			// $http.get("/listfiles")
-			// 	.success(function(data) {
-			// 		$scope.datasets = data.reverse();
-			// })	
+			alert("DONE!!!!")
 		})
 
 		xhr.open('POST', '/api/upload', true);	

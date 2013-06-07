@@ -1,3 +1,4 @@
+import os
 import pymongo
 import feedparser
 import arrow
@@ -7,25 +8,30 @@ from bson.objectid import ObjectId
 import Queue
 import threading
 
-conn = pymongo.Connection('localhost')
-db = conn['rss-rdr']	
+MONGOHQ_URL = os.environ.get("MONGOHQ_URL")
+if MONGOHQ_URL:
+	conn = pymongo.Connection(MONGOHQ_URL)
+	db = conn[urlparse(MONGOHQ_URL).path[1:]]
+else:
+	# Not on an app with the MongoHQ add-on, do some localhost action
+    conn = pymongo.Connection('localhost')
+    db = conn['rss-rdr']	
+
 queue = Queue.Queue()
 
 class ThreadFetchPosts(threading.Thread):
 	def __init__(self, queue):
 		threading.Thread.__init__(self)
-		self.queue = queue;
+		self.queue = queue
 
 	def run(self):
 		while True:
 			#grab feed from the queue
 			feed = self.queue.get()
 
-			print "[+] ----> start"
 			self.fetch_and_save_posts(feed)
 
 			self.queue.task_done()
-			print "[+] ----> DONE"	
 
 	def fetch_and_save_posts(self, feed):
 		print "[+] FEED ID: ", feed.get("_id")
@@ -78,9 +84,8 @@ class ThreadFetchPosts(threading.Thread):
 		if len(posts) > 0:	
 			db["posts"].insert(posts)
 
-def main():
+def execute():
 	db["posts"].remove()
-	db["tags"].remove()
 	db["ranks"].remove()
 
 	# feeds = db["feeds"].find({"group": "Others"})
@@ -100,4 +105,4 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	execute()

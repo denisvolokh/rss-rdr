@@ -1,0 +1,15 @@
+<div class="container-fluid">
+	<h3>Reader's Digest</h3>
+	<div ng-repeat="post in posts" 
+		style="padding: 10px;"
+		id="read-posts" 
+		ng-click="onDigestPostClick(post)">
+		<span style="margin-top: 0px;">								
+			<a href="{[{ post.link }]}" target="_blank" style="font-size: 20px;">
+				<strong>{[{ post.feed.title }]}</strong>
+			</a>
+			<span style="color: grey; font-size: 18px;">(1)</span>
+		</span>
+		<p ng-bind-html-unsafe="post.content"></p>
+	</div>
+</div>

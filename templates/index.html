@@ -35,9 +35,19 @@
 </head>
 
 <body>
-<div class="navbar">
+<div class="navbar" bs-navbar>
   <div class="navbar-inner">
     <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.001</sub></a>
+    <div class="nav-collapse collapse">
+      <ul class="nav">
+        <li data-match-route="/digest"><a href="#/digest"><i class="icon-th-large"></i> Digest</a></li>
+        <li class="divider-vertical"></li>
+        <li data-match-route="/starred"><a href="#/starred"><i class="icon-star"></i> Starred</a></li>
+        <li class="divider-vertical"></li>
+        <li data-match-route="/tags"><a href="#/tags"><i class="icon-tags"></i> Tags</a></li>
+        <li data-match-route="/import"><a href="#/import"><i class="icon-tags"></i> Import</a></li>
+      </ul>
+    </div>  
     <form class="navbar-form pull-right form-inline" 
       ng-hide="root.navigation == 'digest' || root.navigation == 'starred' || root.navigation == 'tags'">
         <span class="btn btn-small">Show Unread Only</span>
@@ -52,14 +62,53 @@
   </div>
 </div>		
 
-<div ng-view></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="fullheight span3" style="overflow: auto; padding-right: 5px;">
+        <div class="row-fluid">
+          <div class="span12">
+            <accordion>
+              <accordion-group 
+                ng-repeat="feed in feeds" ng-cloak is-open="feed.open">
+               <accordion-heading>
+                {[{feed.group}]} <span class="label pull-right">{[{feed.unread_count}]}</span>
+               </accordion-heading> 
+                <ul class="nav nav-list">
+                  <li ng-repeat="item in feed.items">
+                    <!-- <a href="" ng-click="onFeedItemClicked(item)"> -->
+                    <a href="#/feed/{[{item._id.$oid}]}">
+                      {[{item.title | isLong}]} 
+                      <span class="label label-info pull-right" 
+                        ng-hide="item.unread_count == 0">{[{ item.unread_count }]}</span>
+                    </a>
+                  </li> 
+                </ul>
+                
+              </accordion-group>
+            </accordion>
+          </div>
+        </div>
+      </div>
 
-<script type="text/javascript" src="static/js/angular/angular.js"></script>  
+      <div ng-view
+        class="fullheight2 span9"  
+        style="overflow: auto; padding-right: 5px;"></div>      
+    </div>    
+  </div>
+
+<!-- <div ng-view></div> -->
+
+<script type="text/javascript" src="static/js/angular/angular.min.js"></script>  
 <script type="text/javascript" src="static/js/angular/angular-cookies.min.js"></script>  
 <script type="text/javascript" src="static/js/angular/angular-resource.min.js"></script>  
 <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/angular-ui/ui-bootstrap-0.3.0.js"></script>  
+<script type="text/javascript" src="static/js/angular-ui/ui-bootstrap-tpls-0.3.0.js"></script>  
+<script type="text/javascript" src="static/js/ng-infinite-scroll.min.js"></script>  
 <script type="text/javascript" src="static/js/app.js"></script>
 <script type="text/javascript" src="static/js/controllers/home-controller.js"></script>
+<script type="text/javascript" src="static/js/controllers/feed-controller.js"></script>
+<script type="text/javascript" src="static/js/controllers/digest-controller.js"></script>
 <script type="text/javascript" src="static/js/controllers/import-controller.js"></script>
 <script type="text/javascript" src="static/js/controllers/tags-controller.js"></script>
 

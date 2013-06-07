@@ -26,6 +26,8 @@ else:
     conn = pymongo.Connection('localhost')
     db = conn['rss-rdr']	
 
+PAGE_OFFSET = 5
+
 #----------------------------------------
 # controllers
 #----------------------------------------
@@ -71,15 +73,19 @@ def list_posts():
 	tags = None
 	feed_id = None
 	result = None
+	page = 1
 
 	if request.data is not None:
 		obj = json.loads(request.data)
+		if "page" in obj:
+			page = int(obj["page"])	
 
 		if "feed_id" in obj:
 			feed_id = obj["feed_id"]
 			feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
-			posts = db["posts"].find({"feed_id" : ObjectId(feed_id)}).sort("published", direction=-1)
-			result = dict(result=True, data=posts, feed=feed)
+			skip_no = (page - 1) * PAGE_OFFSET
+			posts = db["posts"].find({"feed_id" : ObjectId(feed_id)}).sort("published", direction=-1).skip(skip_no).limit(PAGE_OFFSET)
+			result = dict(result=True, data=posts, feed=feed, page=page)
 		else:
 			if "tags" in obj:
 				tags = str(obj["tags"]).split(",")
@@ -203,44 +209,40 @@ def feed_unsubscribe(feed_id):
 			"items": items
 		}))		
 
-@app.route("/api/feeds")
+@app.route("/api/feeds", methods=["POST"])
 def list_feeds():
-	records = db["feeds"].find()
+	feeds = None
 
-	feeds = []
-	feeds_dict = dict({})
-	group = ""
-	items = None
-	for record in records:
-		group = record["group"]
-		unread_posts_count = db["posts"].find({"feed_id" : record.get("_id"), "read":False}).count()
-		unread_posts_count_in_group = db["posts"].find({"group" : record["group"], "read":False}).count()
-		if feeds_dict.has_key(group):
-			_dict_group = feeds_dict[group]
-			_dict_group["items"].append({
-    				"id": record.get("_id"),
-    				"unread_count" : unread_posts_count,
-    				"xmlUrl": record.get("xmlUrl"),
-    				"htmlUrl": record.get("htmlUrl"), 
-    				"title": record.get("title")
-    			})
-		else:
-			feeds_dict[group] = {
-    			"group" : group,
-    			"unread_count": unread_posts_count_in_group,
-    			"items" : [{
-    				"id": record.get("_id"),
-    				"unread_count" : unread_posts_count,
-    				"xmlUrl": record.get("xmlUrl"),
-    				"htmlUrl": record.get("htmlUrl"), 
-    				"title": record.get("title")
-    			}]
-    		}	
-
-	for group in feeds_dict:
-		feeds.append(feeds_dict[group])
+	if request.data is not None:
+		obj = json.loads(request.data)
+		if "group" in obj:
+			records_feeds = db["feeds"].find({"group" : obj["group"]})
+			if records_feeds.count() > 0:
+				feeds = []
+			for feed in records_feeds:
+				feed["unread_count"] = db["posts"].find({"feed_id" : feed.get("_id"), "read":False}).count()
+				feeds.append(feed)
+	
+	if feeds is None:
+		feeds = db["feeds"].find()		
 
 	return dumps(dict(result=True, data=feeds))
+
+
+@app.route("/api/feeds/groups")
+def list_feeds_groups():
+	groups = db["feeds"].find().distinct("group")
+	feed_groups = []
+
+	for item in groups:
+		group = {
+			"group" : item,
+			"unread_count": db["posts"].find({"group" : item, "read":False}).count(),
+			"items" : [] 
+		}
+		feed_groups.append(group)
+
+	return dumps(dict(result=True, data=feed_groups))	
 
 @app.route("/api/upload", methods=['GET', 'POST'])
 def upload():
@@ -269,13 +271,17 @@ def upload():
 
 			print "[+] ITEMS IN GROUP: ", len(feeds)		
 		
+		db["feeds"].remove()		
 		if len(feeds) > 0:
 			db["feeds"].insert(feeds)	
 
 	db["tags"].remove()		
 	db["tags"].insert([
 		{"name" : "job"},{"name" : "kids"},{"name" : "hobby"},{"name" : "family"}
-	])			
+	])
+
+	import init_fetch_posts
+	init_fetch_posts.execute()			
 			
 	return dumps(dict(result=True))			
 				
@@ -284,5 +290,5 @@ def upload():
 #----------------------------------------
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     app.run(host='0.0.0.0', port=port)

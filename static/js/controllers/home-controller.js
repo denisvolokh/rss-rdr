@@ -1,20 +1,9 @@
 function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	
-	$(document).ready(function(){
-	    $(".fullheight").height($(document).height() - 65);
-	    $(".fullheight2").height($(document).height() - 75);
-
-	    $(".fullheight2").scrollspy({target: "#read-posts"});
-	    $('[data-spy="scroll"]').each(function()
-		{
-    		$(this).scrollspy('refresh');
-		});
-
-		$("#read-posts").on("activate", function()
-		{
-    		console.log("ACTIVATED");
-		});
-	});
+	// $(document).ready(function(){
+	//     $(".fullheight").height($(document).height() - 65);
+	//     $(".fullheight2").height($(document).height() - 75);
+	// });
 
 	$scope.tagPopoverData = {
 		tagname: "",
@@ -22,19 +11,7 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 	};
 
 	var fetchDigest = function() {
-		$http.get("/api/digest")
-			.success(function(result) {
-				$scope.view = "";			
-				if (result.data && result.data.length > 0) {
-					$rootScope.root.digest = result.data;
-					
-				} else {
-					
-				}
-			})
-			.error(function(error) {
-				alert("Arghhh!!!")
-			})
+		
 	}
 
 	var fetchStarred = function() {
@@ -151,18 +128,18 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 		$scope.view = "tags";
 	}
 
-	$scope.onDigestPostClick = function(post) {
-		$scope.selectedPost = post;
-		$http.get("/api/posts?feed_id=" + post.feed_id.$oid)
-			.success(function(result) {
-				$rootScope.root.navigation = post.feed_id.$oid;
-        		$scope.posts = result.data;
-        		$scope.selectedFeed = result.feed;
-        		$scope.view = "read";
-			}).error(function(error) {
-				alert("Arghhhh!")
-			})
-	}
+	// $scope.onDigestPostClick = function(post) {
+	// 	$scope.selectedPost = post;
+	// 	$http.get("/api/posts?feed_id=" + post.feed_id.$oid)
+	// 		.success(function(result) {
+	// 			$rootScope.root.navigation = post.feed_id.$oid;
+ //        		$scope.posts = result.data;
+ //        		$scope.selectedFeed = result.feed;
+ //        		$scope.view = "read";
+	// 		}).error(function(error) {
+	// 			alert("Arghhhh!")
+	// 		})
+	// }
 
 	$scope.onGroupHeaderClick = function(feed) {
 		var closedGroups = $cookieStore.get("closed-groups") || [];
@@ -183,70 +160,26 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 		$cookieStore.put("closed-groups", closedGroups);
 	}
 
-	$scope.onFeedItemClicked = function(feed) {
-		$rootScope.root.navigation = feed.id.$oid;
-		$http({
-				url: "/api/posts",
-				data: {
-					feed_id: feed.id.$oid
-				},
-				method: "POST"
-			})
-			.success(function(result) {
-        		$scope.posts = result.data;
-        		$scope.selectedFeed = result.feed;
-        		$scope.view = "read";
-        		window.scrollTo(0, 0)
-			}).error(function(error) {
-				alert("Arghhhh!")
-			})
-	}
+	// $scope.onFeedItemClicked = function(feed) {
+	// 	$rootScope.root.navigation = feed.id.$oid;
+	// 	$http({
+	// 			url: "/api/posts",
+	// 			data: {
+	// 				feed_id: feed.id.$oid
+	// 			},
+	// 			method: "POST"
+	// 		})
+	// 		.success(function(result) {
+ //        		$scope.posts = result.data;
+ //        		$scope.selectedFeed = result.feed;
+ //        		$scope.view = "read";
+ //        		window.scrollTo(0, 0)
+	// 		}).error(function(error) {
+	// 			alert("Arghhhh!")
+	// 		})
+	// }
 
-	$rootScope.root.makeFeedAllRead = function(feed_id) {
-		$http({
-			url: "/api/feed/make_read/" + feed_id,
-			method: "UPDATE"
-		})
-		.success(function(result) {
-			angular.forEach($scope.posts, function(post) {
-				post.read = true;
-			});
-
-			angular.forEach($rootScope.root.feeds, function(group) {
-				angular.forEach(group.items, function(item) {
-					if (item.id.$oid == result.feed) {
-						item.unread_count = result.unread_count;
-						group.unread_count = result.group_unread_count;
-					}
-				})
-			})
-		}).error(function(error) {
-			alert("Arghhhh!")
-		})	
-	}
-
-	$rootScope.root.unsubscribeFeed = function(feed_id) {
-		$http({
-			url: "/api/feed/unsubscribe/" + feed_id,
-			method: "DELETE"
-		})
-		.success(function(result) {
-			angular.forEach($rootScope.root.feeds, function(group) {
-				if (group.group == result.group.group) {
-					group.unread_count = result.group.unread_count;
-					group.items = result.group.items;
-					angular.forEach(group.items, function(item) {
-						item["isGroupOpen"] = true;
-					})
-				}
-			})	
-
-			$rootScope.root.navigation = "digest";
-			fetchDigest();
-		}).error(function(error) {
-			alert("Arghhhh!")
-		})		
-	}
+	
 
 	$scope.getNavigationMenuState = function(actual, expected) {
 		if (actual == expected) {
