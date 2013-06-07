@@ -7,6 +7,7 @@ from dateutil.parser import parse
 from bson.objectid import ObjectId
 import Queue
 import threading
+from urlparse import urlparse
 
 MONGOHQ_URL = os.environ.get("MONGOHQ_URL")
 if MONGOHQ_URL:

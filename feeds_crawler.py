@@ -11,6 +11,7 @@ import Queue
 import threading
 from flask.ext.script import Manager
 from app import app
+from urlparse import urlparse
 
 manager = Manager(app)
 
