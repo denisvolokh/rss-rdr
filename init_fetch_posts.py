@@ -36,7 +36,7 @@ class ThreadFetchPosts(threading.Thread):
 
 	def fetch_and_save_posts(self, feed):
 		print "[+] FEED ID: ", feed.get("_id")
-		print "[+] FEED: ", feed.get("title")
+		# print "[+] FEED: ", feed.get("title")
 		data = feedparser.parse(feed.get("xmlUrl"))
 		# data = feedparser.parse("http://feeds.feedburner.com/mobbit/TnEX")
 		print "[+] Entries ", len(data.entries)
