@@ -1,4 +1,4 @@
-function FeedController($http, $scope, $rootScope, $log, $rootScope, $routeParams) {
+function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 	var self = this;
 
 	$scope.posts = [];
@@ -48,21 +48,21 @@ function FeedController($http, $scope, $rootScope, $log, $rootScope, $routeParam
 		console.log("load more");
 	}
 
-	$rootScope.root.makeFeedAllRead = function(feed_id) {
+	$rootScope.root.makeFeedAllRead = function() {
 		$http({
-			url: "/api/feed/make_read/" + feed_id,
-			method: "UPDATE"
+			url: "/api/feed/make_read/" + $routeParams.id,
+			method: "POST"
 		})
 		.success(function(result) {
 			angular.forEach($scope.posts, function(post) {
 				post.read = true;
 			});
 
-			angular.forEach($rootScope.root.feeds, function(group) {
-				angular.forEach(group.items, function(item) {
-					if (item.id.$oid == result.feed) {
+			angular.forEach($rootScope.feeds, function(feed) {
+				angular.forEach(feed.items, function(item) {
+					if (item._id.$oid == $routeParams.id) {
 						item.unread_count = result.unread_count;
-						group.unread_count = result.group_unread_count;
+						feed.unread_count = result.group_unread_count;
 					}
 				})
 			})
@@ -71,10 +71,10 @@ function FeedController($http, $scope, $rootScope, $log, $rootScope, $routeParam
 		})	
 	}
 
-	$rootScope.root.unsubscribeFeed = function(feed_id) {
+	$rootScope.root.unsubscribeFeed = function() {
 		$http({
-			url: "/api/feed/unsubscribe/" + feed_id,
-			method: "DELETE"
+			url: "/api/feed/unsubscribe/" + $routeParams.id,
+			method: "POST"
 		})
 		.success(function(result) {
 			angular.forEach($rootScope.root.feeds, function(group) {

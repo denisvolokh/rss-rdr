@@ -168,23 +168,21 @@ def feeds_unread_count(feed_id):
 	return dumps(dict(result=True, unread_count=count, feed=feed_id, group_unread_count=group_count))		
 
 
-@app.route("/api/feed/make_read/<feed_id>", methods=["UPDATE"])
+@app.route("/api/feed/make_read/<feed_id>", methods=["POST"])
 def feed_make_read_all(feed_id):
 	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
 
 	to_update = db["posts"].find({"feed_id" : ObjectId(feed_id), "read" : False})
-	print "[+] LEN: ", to_update.count()
 
 	db["posts"].update({"feed_id" : ObjectId(feed_id)}, {"$set" : {"read": True}}, multi=True)
 	count = db["posts"].find({"feed_id" : ObjectId(feed_id), "read" : False}).count()
-	print "[+] after: ", count
 
 	group_count = db["posts"].find({"group" : feed["group"], "read" : False}).count()
 
 	return dumps(dict(result=True, unread_count=count, feed=feed_id, group_unread_count=group_count))			
 
 
-@app.route("/api/feed/unsubscribe/<feed_id>", methods=["DELETE"])
+@app.route("/api/feed/unsubscribe/<feed_id>", methods=["POST"])
 def feed_unsubscribe(feed_id):
 	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
 	db["feeds"].remove({"_id" : ObjectId(feed_id)})
