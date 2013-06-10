@@ -67,7 +67,7 @@
       <div class="fullheight span3" style="overflow: auto; padding-right: 5px;">
         <div class="row-fluid">
           <div class="span12">
-            <accordion>
+            <accordion ng-cloak>
               <accordion-group 
                 ng-repeat="feed in feeds" ng-cloak is-open="feed.open">
                <accordion-heading>
@@ -110,6 +110,7 @@
 <script type="text/javascript" src="static/js/controllers/digest-controller.js"></script>
 <script type="text/javascript" src="static/js/controllers/import-controller.js"></script>
 <script type="text/javascript" src="static/js/controllers/tags-controller.js"></script>
+<script type="text/javascript" src="static/js/controllers/starred-controller.js"></script>
 
 <script type="text/javascript" src="static/js/angular/strap/angular-strap.js"></script>
 <script type="text/javascript" src="static/js/moment.min.js"></script>

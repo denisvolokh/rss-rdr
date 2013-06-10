@@ -1,9 +1,4 @@
 <div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span12">
-			<h2 class="feed-title">{[{ feed.title }]} <a href="{[{ feed.htmlUrl }]}"><i style="margin-top: 6px;" class="icon-globe"></i></a></h2>
-		</div>
-	</div>	
 	<div ng-repeat="post in posts">
 		<div class="row-fluid">
 			<div class="span8">
@@ -21,12 +16,14 @@
 				</h6>
 			</div>
 		</div>
+		<!-- <div class="row-fluid">
+			from	
+		</div> -->
 		<div class="row-fluid">
 			<div class="span12">
-				<blockquote ng-class="getPostBlockquoteClass(post)">
-					<!-- <p><a href="{[{ post.link }]}" target="_blank"><strong>{[{ post.feed.title }]}</strong></a></p> -->
+				<span>
 					<p ng-bind-html-unsafe="post.content"></p>
-				</blockquote>
+				</span>
 			</div>
 		</div>
 		<div class="row-fluid">

@@ -41,7 +41,7 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 				}
 
 				var date = moment(item[prop].$date)
-				item.published.$date = date.format("dddd, MMMM Do YYYY, HH:mm");
+				item.published.$date = date.format("MMM Do YYYY, HH:mm");
 				item.published.time_ago = date.fromNow();
 			})
 			$scope.posts = $scope.posts.concat(result.data);
@@ -59,6 +59,18 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 	$(".fullheight2")[0].addEventListener("scroll", self.scroll);
 
 	self.fetchPosts(1);	
+
+	$scope.onStarClick = function(post) {
+		$http({
+			url: "/api/posts/update_star/" + post._id.$oid,
+			method: "UPDATE"
+		}).success(function(result) {
+    		post.starred = !post.starred;
+    		post.read = true;
+		}).error(function(error) {
+			alert("Arghhhh!")
+		})
+	}
 
 	$rootScope.root.makeFeedAllRead = function() {
 		$http({

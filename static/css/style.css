@@ -17,13 +17,12 @@
 	padding-right: 0px;
 }
 
-/*html, body {
-	height: 100%;
-}*/
-
-/*#content, .container-fluid, .span9 .span3
-{
-    border: 1px solid #000;
-    overflow-y:auto;
-    height:100%;
-}*/​
+.feed-title {
+  border-bottom: 1px dotted #389B17;
+  color: #389B17;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 0px;
+  text-transform: uppercase;
+}

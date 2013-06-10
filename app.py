@@ -36,7 +36,7 @@ PAGE_OFFSET = 5
 def index():
     return render_template('index.html')
 
-@app.route("/api/posts/starred")
+@app.route("/api/posts/starred", methods=["POST"])
 def list_starred():
 	posts = db["posts"].find({"starred": True})
 	

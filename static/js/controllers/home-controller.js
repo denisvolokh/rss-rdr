@@ -30,17 +30,17 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 
 	fetchDigest();
 
-	$scope.onStarClick = function(post) {
-		$http({
-			url: "/api/posts/update_star/" + post._id.$oid,
-			method: "UPDATE"
-		}).success(function(result) {
-    		post.starred = !post.starred;
-    		post.read = true;
-		}).error(function(error) {
-			alert("Arghhhh!")
-		})
-	}
+	// $scope.onStarClick = function(post) {
+	// 	$http({
+	// 		url: "/api/posts/update_star/" + post._id.$oid,
+	// 		method: "UPDATE"
+	// 	}).success(function(result) {
+ //    		post.starred = !post.starred;
+ //    		post.read = true;
+	// 	}).error(function(error) {
+	// 		alert("Arghhhh!")
+	// 	})
+	// }
 
 	// $scope.onAddTagsClick = function(post) {
 	// 	$scope.tagPopoverData = {
