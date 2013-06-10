@@ -26,7 +26,7 @@ app.config(function($routeProvider) {
 	});
 });
 
-app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCache) {
+app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCache, $filter) {
 	$log.info("[+] App is running!")
 	
 	$(".fullheight").height($(document).height() - 65);
@@ -59,6 +59,7 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 		angular.forEach(feeds, function(feed) {
 			if (feed["open"] == true) {
 				if (feed.items.length == 0) {
+					// $rootScope.isLoadingFeeds = true;
 					$http({
 						url: "/api/feeds",
 						data: {
@@ -66,9 +67,15 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 						},
 						method: "POST"
 					}).success(function(result) {
-						feed.items = result.data
+						angular.forEach(result.data, function(item) {
+							item.title = $filter("isLong")(item.title)
+							feed.items.push(item);	
+						})
+						// feed.items = result.data
+						// $rootScope.isLoadingFeeds = false;
 					}).error(function() {	
 						alert("Arghhh!")	
+						$rootScope.isLoadingFeeds = false;
 					})
 				}		
 			}
@@ -80,7 +87,7 @@ app.filter("isLong", function isLong() {
       return function (text, length, end) {
       		text = text.replace(/^\s+/, '').replace(/\s+$/, '')
             if (isNaN(length))
-                length = 29;
+                length = 26;
 
             if (end === undefined)
                 end = "...";

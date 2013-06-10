@@ -37,7 +37,7 @@
 <body>
 <div class="navbar" bs-navbar>
   <div class="navbar-inner">
-    <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.001</sub></a>
+    <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.002</sub></a>
     <div class="nav-collapse collapse">
       <ul class="nav">
         <li data-match-route="/digest"><a href="#/digest"><i class="icon-th-large"></i> Digest</a></li>
@@ -72,12 +72,11 @@
                 ng-repeat="feed in feeds" ng-cloak is-open="feed.open">
                <accordion-heading>
                 {[{feed.group}]} <span class="label pull-right">{[{feed.unread_count}]}</span>
-               </accordion-heading> 
-                <ul class="nav nav-list">
-                  <li ng-repeat="item in feed.items">
-                    <!-- <a href="" ng-click="onFeedItemClicked(item)"> -->
+               </accordion-heading>
+                <ul class="nav nav-list" bs-navbar>
+                  <li ng-repeat="item in feed.items" data-match-route="/feed/{[{item._id.$oid}]}">
                     <a href="#/feed/{[{item._id.$oid}]}">
-                      {[{item.title | isLong}]} 
+                      {[{item.title}]} 
                       <span class="label label-info pull-right" 
                         ng-hide="item.unread_count == 0">{[{ item.unread_count }]}</span>
                     </a>
@@ -113,6 +112,7 @@
 <script type="text/javascript" src="static/js/controllers/tags-controller.js"></script>
 
 <script type="text/javascript" src="static/js/angular/strap/angular-strap.js"></script>
+<script type="text/javascript" src="static/js/moment.min.js"></script>
 
 </body>
 </html>

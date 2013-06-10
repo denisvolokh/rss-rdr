@@ -42,55 +42,55 @@ function HomeController($http, $scope, $log, $rootScope, $cookieStore) {
 		})
 	}
 
-	$scope.onAddTagsClick = function(post) {
-		$scope.tagPopoverData = {
-			tagname: "",
-			post: post
-		}
-	}	
+	// $scope.onAddTagsClick = function(post) {
+	// 	$scope.tagPopoverData = {
+	// 		tagname: "",
+	// 		post: post
+	// 	}
+	// }	
 
-	$scope.onCreateTagClick = function(data) {
-		// alert(data.tagname + data.post_id);
+	// $scope.onCreateTagClick = function(data) {
+	// 	// alert(data.tagname + data.post_id);
 
-		if (data.tagname != "") {
-			tags = data.post.tags || [];
-			tags.push(data.tagname);	
+	// 	if (data.tagname != "") {
+	// 		tags = data.post.tags || [];
+	// 		tags.push(data.tagname);	
 			
-			$http({
-				url: "/api/posts/" + data.post._id.$oid + "/add_tags",
-				data: {
-					tags : tags.join(",")
-				},
-				method: "POST"
-			}).success(function(result) {
+	// 		$http({
+	// 			url: "/api/posts/" + data.post._id.$oid + "/add_tags",
+	// 			data: {
+	// 				tags : tags.join(",")
+	// 			},
+	// 			method: "POST"
+	// 		}).success(function(result) {
 	    		
-			}).error(function(error) {
-				alert("Arghhhh!")
-			})	
-		}
+	// 		}).error(function(error) {
+	// 			alert("Arghhhh!")
+	// 		})	
+	// 	}
 
-		$scope.tagPopoverData = {
-			tagname: "",
-			post: null
-		}
-	}
+	// 	$scope.tagPopoverData = {
+	// 		tagname: "",
+	// 		post: null
+	// 	}
+	// }
 
-	$scope.onRemoveTagClick = function(post, tag) {
-		tags = post.tags;
-		tags.splice(tags.indexOf(tag), 1);
+	// $scope.onRemoveTagClick = function(post, tag) {
+	// 	tags = post.tags;
+	// 	tags.splice(tags.indexOf(tag), 1);
 		
-		$http({
-			url: "/api/posts/" + post._id.$oid + "/add_tags",
-			data: {
-				tags : tags.join(",")
-			},
-			method: "POST"
-		}).success(function(result) {
+	// 	$http({
+	// 		url: "/api/posts/" + post._id.$oid + "/add_tags",
+	// 		data: {
+	// 			tags : tags.join(",")
+	// 		},
+	// 		method: "POST"
+	// 	}).success(function(result) {
     		
-		}).error(function(error) {
-			alert("Arghhhh!")
-		})		
-	}
+	// 	}).error(function(error) {
+	// 		alert("Arghhhh!")
+	// 	})		
+	// }
 
 	$scope.onPostClick = function(post) {		
 		$http.get("/api/posts/make_read/" + post._id.$oid)

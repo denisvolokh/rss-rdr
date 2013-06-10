@@ -1,4 +1,6 @@
 function FeedController($http, $scope, $rootScope, $log, $routeParams) {
+	$log.info("[+] Feed Controller!")
+
 	var self = this;
 
 	$scope.posts = [];
@@ -28,6 +30,20 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 			method: "POST"
 		}).success(function(result) {
 			$scope.feed = result.feed;
+			angular.forEach(result.data, function(item) {
+				var prop = "published";
+				if (item.published == null) {
+					item.published = {
+						$date : "",
+						time_ago: ""
+					}
+					prop = "created";
+				}
+
+				var date = moment(item[prop].$date)
+				item.published.$date = date.format("dddd, MMMM Do YYYY, HH:mm");
+				item.published.time_ago = date.fromNow();
+			})
 			$scope.posts = $scope.posts.concat(result.data);
 			$scope.page = result.page;
 			if (callback) {
@@ -43,10 +59,6 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 	$(".fullheight2")[0].addEventListener("scroll", self.scroll);
 
 	self.fetchPosts(1);	
-
-	$scope.myPagingFunction = function() {
-		console.log("load more");
-	}
 
 	$rootScope.root.makeFeedAllRead = function() {
 		$http({
@@ -89,6 +101,54 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 
 			$rootScope.root.navigation = "digest";
 			fetchDigest();
+		}).error(function(error) {
+			alert("Arghhhh!")
+		})		
+	}
+
+	$scope.onAddTagsClick = function(post) {
+		$scope.tagPopoverData = {
+			tagname: "",
+			post: post
+		}
+	}	
+
+	$scope.onCreateTagClick = function(data) {
+		if (data.tagname != "") {
+			tags = data.post.tags || [];
+			tags.push(data.tagname);	
+			
+			$http({
+				url: "/api/posts/" + data.post._id.$oid + "/add_tags",
+				data: {
+					tags : tags.join(",")
+				},
+				method: "POST"
+			}).success(function(result) {
+	    		
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})	
+		}
+
+		$scope.tagPopoverData = {
+			tagname: "",
+			post: null
+		}
+	}
+
+	$scope.onRemoveTagClick = function(post, tag) {
+		tags = post.tags;
+		tags.splice(tags.indexOf(tag), 1);
+		
+		$http({
+			url: "/api/posts/" + post._id.$oid + "/add_tags",
+			data: {
+				tags : tags.join(",")
+			},
+			method: "POST"
+		}).success(function(result) {
+    		
 		}).error(function(error) {
 			alert("Arghhhh!")
 		})		
