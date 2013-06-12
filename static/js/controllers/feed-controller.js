@@ -1,4 +1,4 @@
-function FeedController($http, $scope, $rootScope, $log, $routeParams) {
+function FeedController($http, $scope, $rootScope, $log, $routeParams, $location, $filter) {
 	$log.info("[+] Feed Controller!")
 
 	var self = this;
@@ -62,8 +62,11 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 
 	$scope.onStarClick = function(post) {
 		$http({
-			url: "/api/posts/update_star/" + post._id.$oid,
-			method: "UPDATE"
+			url: "/api/posts/" + post._id.$oid + "/update",
+			method: "POST",
+			data: {
+				starred: !post.starred
+			}
 		}).success(function(result) {
     		post.starred = !post.starred;
     		post.read = true;
@@ -101,18 +104,24 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 			method: "POST"
 		})
 		.success(function(result) {
-			angular.forEach($rootScope.root.feeds, function(group) {
+			angular.forEach($rootScope.feeds, function(group) {
 				if (group.group == result.group.group) {
 					group.unread_count = result.group.unread_count;
+					var sort_func = function(a, b) {
+						if (a.unread_count < b.unread_count)
+	     					return 1;
+	  					if (a.unread_count > b.unread_count)
+	    					return -1;
+	  					return 0;
+					}
+					result.group.items.sort(sort_func);
 					group.items = result.group.items;
 					angular.forEach(group.items, function(item) {
-						item["isGroupOpen"] = true;
-					})
+						item.title = $filter("isLong")(item.title)
+					})	
 				}
 			})	
-
-			$rootScope.root.navigation = "digest";
-			fetchDigest();
+			$location.path("/digest")
 		}).error(function(error) {
 			alert("Arghhhh!")
 		})		

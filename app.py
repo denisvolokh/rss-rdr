@@ -124,39 +124,47 @@ def post_update_tags(post_id):
 	return dumps(dict(result=True))		
 
 
-@app.route("/api/posts/make_read/<post_id>", methods=["POST", "GET"])
-def post_make_read(post_id):
-	post = db["posts"].find_one({"_id" : ObjectId(post_id)})
-	db["posts"].update({"_id" : ObjectId(post_id)},{"$set" : {"read": True}})
+# @app.route("/api/posts/make_read/<post_id>", methods=["POST", "GET"])
+# def post_make_read(post_id):
+# 	post = db["posts"].find_one({"_id" : ObjectId(post_id)})
+# 	db["posts"].update({"_id" : ObjectId(post_id)},{"$set" : {"read": True}})
 
-	feed = db["feeds"].find_one({"_id" : ObjectId(post["feed_id"])})
-	count = db["posts"].find({"feed_id" : ObjectId(post["feed_id"]), "read" : False}).count()
-	group_count = db["posts"].find({"group" : feed["group"], "read" : False}).count()
+# 	feed = db["feeds"].find_one({"_id" : ObjectId(post["feed_id"])})
+# 	count = db["posts"].find({"feed_id" : ObjectId(post["feed_id"]), "read" : False}).count()
+# 	group_count = db["posts"].find({"group" : feed["group"], "read" : False}).count()
 
-	return dumps(dict(result=True, unread_count=count, feed=post["feed_id"], group_unread_count=group_count))		
+# 	return dumps(dict(result=True, unread_count=count, feed=post["feed_id"], group_unread_count=group_count))		
 
 
-@app.route("/api/posts/update_star/<post_id>", methods=["UPDATE"])
-def post_update_star(post_id):
+@app.route("/api/posts/<post_id>/update", methods=["POST"])
+def update_post(post_id):
 	post = db["posts"].find_one({
 		"_id" : ObjectId(post_id)
 	})
 
-	if post["starred"] == True:
-		starred = False
-	else:
-		starred = True	
+	_set = {}
+	if post is not None:
+		if request.data is not None:
+			obj = json.loads(request.data)
+			if "starred" in obj:
+				_set["starred"] = obj["starred"]
+			if "read" in obj:
+				_set["read"] = obj["read"]
+			else:
+				_set["read"] = True
+			
+			print "[+] Update post with: ", _set
+			db["posts"].update(
+				{
+					"_id" : ObjectId(post_id)
+				},
+				{
+					"$set" : _set
+				}
+			)						
+			return dumps(dict(result=True))		
 
-	db["posts"].update(
-		{
-			"_id" : ObjectId(post_id)
-		},
-		{
-			"$set" : {"starred": starred, "read" : True}
-		}
-	)
-
-	return dumps(dict(result=True))		
+	return dumps(dict(result=False))		
 
 
 @app.route("/api/feeds/unread/count/<feed_id>", methods=["POST", "GET"])
@@ -185,27 +193,24 @@ def feed_make_read_all(feed_id):
 @app.route("/api/feed/unsubscribe/<feed_id>", methods=["POST"])
 def feed_unsubscribe(feed_id):
 	feed = db["feeds"].find_one({"_id" : ObjectId(feed_id)})
+	group = feed["group"]
 	db["feeds"].remove({"_id" : ObjectId(feed_id)})
 	db["posts"].remove({"feed_id" : ObjectId(feed_id)})
 
-	unread_posts_count_in_group = db["posts"].find({"group" : feed["group"], "read":False}).count()
-	feeds_in_group = db["feeds"].find({"group" : feed["group"]})
-	items = []
-	for feed_item in feeds_in_group:
-		items.append({
-				"id": feed_item["_id"],
-				"unread_count": db["posts"].find({"feed_id" : feed_item.get("_id"), "read":False}).count(),
-				"xmlUrl": feed_item.get("xmlUrl"),
-    			"htmlUrl": feed_item.get("htmlUrl"), 
-    			"title": feed_item.get("title")
-			})
-
+	unread_posts_count_in_group = db["posts"].find({"group" : group, "read":False}).count()
+	
+	records_feeds = db["feeds"].find({"group" : group})
+	feeds = []
+	for feed in records_feeds:
+		feed["unread_count"] = db["posts"].find({"feed_id" : feed.get("_id"), "read":False}).count()
+		feeds.append(feed)
 
 	return dumps(dict(result=True, group={
 			"group":feed["group"],
 			"unread_count": unread_posts_count_in_group,
-			"items": items
+			"items": feeds
 		}))		
+
 
 @app.route("/api/feeds", methods=["POST"])
 def list_feeds():

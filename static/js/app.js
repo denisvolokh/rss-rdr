@@ -44,8 +44,8 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 				angular.forEach(result.data, function(feed) {
 					feed["open"] = false;
 				})
+				
 				$rootScope.feeds = result.data;
-
 				$location.path("/digest")	
 			} else {
 				$location.path("/import");		
@@ -60,7 +60,7 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 		angular.forEach(feeds, function(feed) {
 			if (feed["open"] == true) {
 				if (feed.items.length == 0) {
-					if ($rootScope.loading_feeds)
+					if ($rootScope.loading_feeds == true)
 						return;
 
 					$rootScope.loading_feeds = true;
@@ -72,6 +72,14 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 						method: "POST"
 					}).success(function(result) {
 						$rootScope.loading_feeds = false;
+						var sort_func = function(a, b) {
+							if (a.unread_count < b.unread_count)
+		     					return 1;
+		  					if (a.unread_count > b.unread_count)
+		    					return -1;
+		  					return 0;
+						}
+						result.data.sort(sort_func);
 						if (feed.items.length == 0) {
 							angular.forEach(result.data, function(item) {
 								item.title = $filter("isLong")(item.title)
