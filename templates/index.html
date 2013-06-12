@@ -37,7 +37,7 @@
 <body>
 <div class="navbar" bs-navbar>
   <div class="navbar-inner">
-    <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.003</sub></a>
+    <a class="brand" href="#">RSS Rdr <sub style="font-size: 9px">v.004</sub></a>
     <div class="nav-collapse collapse">
       <ul class="nav">
         <li data-match-route="/digest"><a href="#/digest"><i class="icon-th-large"></i> Digest</a></li>
@@ -71,7 +71,7 @@
               <accordion-group 
                 ng-repeat="feed in feeds" ng-cloak is-open="feed.open">
                <accordion-heading>
-                {[{feed.group}]} <span class="label pull-right">{[{feed.unread_count}]}</span>
+                {[{feed.group}]} <span class="label pull-right" ng-hide="feed.unread_count == 0">{[{feed.unread_count}]}</span>
                </accordion-heading>
                 <ul class="nav nav-list" bs-navbar>
                   <li ng-repeat="item in feed.items" data-match-route="/feed/{[{item._id.$oid}]}">
@@ -82,7 +82,6 @@
                     </a>
                   </li> 
                 </ul>
-                
               </accordion-group>
             </accordion>
           </div>

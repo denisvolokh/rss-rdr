@@ -119,10 +119,21 @@ function FeedController($http, $scope, $rootScope, $log, $routeParams) {
 	}
 
 	$scope.onAddTagsClick = function(post) {
-		$scope.tagPopoverData = {
-			tagname: "",
-			post: post
-		}
+		$http.get("/api/tags")
+			.success(function(result) {
+				var tags = []	
+				angular.forEach(result.data, function(tag) {
+					if (post.tags.indexOf(tag.name) == -1)
+						tags.push(tag.name)
+				})
+				$scope.tagPopoverData = {
+					tagname: "",
+					post: post,
+					tags: tags
+				}
+			}).error(function(error) {
+				alert("Arghhhh!")
+			})		
 	}	
 
 	$scope.onCreateTagClick = function(data) {

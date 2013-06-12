@@ -1,4 +1,4 @@
-var app = angular.module("app", ['ngResource', "$strap.directives", "ngCookies", 'ui.bootstrap', "infinite-scroll"]);
+var app = angular.module("app", ['ngResource', "$strap.directives", "ngCookies", 'ui.bootstrap']);
 
 app.config(function($interpolateProvider) {
 	$interpolateProvider.startSymbol('{[{');
@@ -55,11 +55,15 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 			alert("Arghhh!!!")
 		})
 
+	$rootScope.loading_feeds = false;
 	$rootScope.$watch("feeds", function(feeds) {
 		angular.forEach(feeds, function(feed) {
 			if (feed["open"] == true) {
 				if (feed.items.length == 0) {
-					// $rootScope.isLoadingFeeds = true;
+					if ($rootScope.loading_feeds)
+						return;
+
+					$rootScope.loading_feeds = true;
 					$http({
 						url: "/api/feeds",
 						data: {
@@ -67,15 +71,16 @@ app.run(function($rootScope, $location, $http, $log, $cookieStore, $templateCach
 						},
 						method: "POST"
 					}).success(function(result) {
-						angular.forEach(result.data, function(item) {
-							item.title = $filter("isLong")(item.title)
-							feed.items.push(item);	
-						})
-						// feed.items = result.data
-						// $rootScope.isLoadingFeeds = false;
+						$rootScope.loading_feeds = false;
+						if (feed.items.length == 0) {
+							angular.forEach(result.data, function(item) {
+								item.title = $filter("isLong")(item.title)
+								feed.items.push(item);	
+							})	
+						}						
 					}).error(function() {	
+						$rootScope.loading_feeds = false;
 						alert("Arghhh!")	
-						$rootScope.isLoadingFeeds = false;
 					})
 				}		
 			}

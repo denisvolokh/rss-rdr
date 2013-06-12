@@ -1,7 +1,5 @@
 <form>
-	<input type="text" class="span12"
-		data-provide="typeahead" data-items="4" data-source='["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Dakota","North Carolina","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]'
-		placeholder="Name your tag"
+	<input type="text" class="span12" bs-typeahead="tagPopoverData.tags"
 		ng-model="tagPopoverData.tagname">
 	<div style="margin: 0px 0px -20px -10px; padding: 9px 10px 0px; border-radius: 0px 0px 5px 5px;">
 		<button class="btn btn-small" ng-click="dismiss()">Close</button>

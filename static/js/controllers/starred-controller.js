@@ -27,6 +27,16 @@ function StarredController($http, $scope, $rootScope, $log, $routeParams) {
 
 		})	
 
-
+	$scope.onStarClick = function(post) {
+		$http({
+			url: "/api/posts/update_star/" + post._id.$oid,
+			method: "UPDATE"
+		}).success(function(result) {
+    		post.starred = !post.starred;
+    		post.read = true;
+		}).error(function(error) {
+			alert("Arghhhh!")
+		})
+	}	
 
 }	
